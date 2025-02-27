@@ -60,12 +60,8 @@ const Movimentacoes = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         console.log(editItem);
-        try {
-            await api.put(`/atualizar/${editItem.id}`, editItem)
-        } catch (error) {
-            alert("Erro ao enviar, tente novamente")
-            console.error("Erro ao registrar os dados:", error);
-        }
+        await api.put(`/atualizar/${editItem.id}`, editItem)
+        
     }
 
     const handleClose = () => setShow(false)
