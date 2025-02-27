@@ -53,7 +53,10 @@ function App() {
   return (
     <>
       <h1 className='mt-5 mb-5'>Registro de Movimentação</h1>
-      <form onSubmit={handleSubmit} className='row g-3 justify-content-center'>
+      <form onSubmit={()=>{
+        handleSubmit()
+        handleShow()
+      }} className='row g-3 justify-content-center'>
         <div className="row justify-content-center mb-3">
           <div className='col-md-6'>
             <label htmlFor="input-data" className='form-label'>
@@ -107,7 +110,7 @@ function App() {
           </div>
         </div>
         <div className='row justify-content-center mt-5 mb-5'>
-          <button className='btn btn-primary col-md-6' type='submit' onClick={handleShow}>Registrar</button>
+          <button className='btn btn-primary col-md-6' type='submit'>Registrar</button>
         </div>
       </form>
 
