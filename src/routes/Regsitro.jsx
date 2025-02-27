@@ -27,13 +27,9 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     console.log(formData);
-    try {
-      await api.post('/cadastrar', formData)
-      handleShow
-    } catch (error) {
-      alert("Erro ao enviar, tente novamente")
-      console.error("Erro ao registrar os dados:", error);
-    }
+    await api.post('/cadastrar', formData)
+    handleShow
+    
   }
 
   //configs modal
