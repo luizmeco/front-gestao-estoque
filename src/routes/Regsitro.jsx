@@ -28,7 +28,7 @@ function App() {
     e.preventDefault()
     console.log(formData);
     await api.post('/cadastrar', formData)
-    handleShow
+    handleShow()
     console.log("dados enviados com sucesso");
     
   }
