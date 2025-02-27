@@ -29,6 +29,7 @@ function App() {
     console.log(formData);
     try {
       await api.post('/cadastrar', formData)
+      handleShow
     } catch (error) {
       alert("Erro ao enviar, tente novamente")
       console.error("Erro ao registrar os dados:", error);
@@ -53,10 +54,7 @@ function App() {
   return (
     <>
       <h1 className='mt-5 mb-5'>Registro de Movimentação</h1>
-      <form onSubmit={()=>{
-        handleSubmit()
-        handleShow()
-      }} className='row g-3 justify-content-center'>
+      <form onSubmit={handleSubmit} className='row g-3 justify-content-center'>
         <div className="row justify-content-center mb-3">
           <div className='col-md-6'>
             <label htmlFor="input-data" className='form-label'>
