@@ -29,6 +29,7 @@ function App() {
     console.log(formData);
     await api.post('/cadastrar', formData)
     handleShow
+    console.log("dados enviados com sucesso");
     
   }
 
