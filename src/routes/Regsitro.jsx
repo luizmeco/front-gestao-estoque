@@ -105,7 +105,7 @@ function App() {
           </div>
         </div>
         <div className='row justify-content-center mt-5 mb-5'>
-          <button className='btn btn-primary col-md-6' type='submit'>Registrar</button>
+          <button className='btn btn-rg btn-primary col-md-6' type='submit'>Registrar</button>
         </div>
       </form>
 

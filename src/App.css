@@ -10,5 +10,16 @@
   min-height: 100vh;
 }
 
+.bg-primary{
+  background-color: #e01a1a !important;
+}
 
+.bg-secondary{
+  background-color: #1b1b1b !important;
+}
 
+.btn-rg{
+    background-color: white !important;
+    color: black !important;
+    border: none !important;
+}
