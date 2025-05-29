@@ -8,7 +8,7 @@ import Movimentacoes from './routes/Movimentacoes.jsx'
 import ErrorPage from './routes/ErrorPage.jsx'
 import { Analytics } from "@vercel/analytics/react"
 
-//configs do router
+//configs do router awoubfawf
 
 import {
   createBrowserRouter,
