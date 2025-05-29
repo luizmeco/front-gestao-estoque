@@ -5,6 +5,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import App from './App.jsx'
 import Regsitros from './routes/Regsitro.jsx'
 import Movimentacoes from './routes/Movimentacoes.jsx'
+import Home from './routes/Home.jsx'
 import ErrorPage from './routes/ErrorPage.jsx'
 import { Analytics } from "@vercel/analytics/react"
 
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "/registros",
         element: <Regsitros />,
+      },
+      {
+        path: "/",
+        element: <Home />,
       },
     ],
   }
