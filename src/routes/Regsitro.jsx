@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import api from '../../services/api.js'
+
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+
 import { FaCheck } from "react-icons/fa";
+import { LuClipboardPlus } from "react-icons/lu";
+import { TbArrowsLeftRight } from "react-icons/tb";
+
+
 
 function App() {
 
@@ -30,7 +36,7 @@ function App() {
     await api.post('/cadastrar', formData)
     handleShow()
     console.log("dados enviados com sucesso");
-    
+
   }
 
   //configs modal
@@ -50,8 +56,13 @@ function App() {
 
   return (
     <>
-      <h1 className='mt-5 mb-5'>Registro de Movimentação</h1>
-      <form onSubmit={handleSubmit} className='row g-3 justify-content-center'>
+      <div className='card-header bg-primary rounded-4'>
+        <div className='d-flex align-items-center justify-content-center gap-2'>
+          <LuClipboardPlus />
+          <h1>Novo Registro</h1>
+        </div>
+      </div>
+      <form onSubmit={handleSubmit} className='row g-3 justify-content-center mt-3'>
         <div className="row justify-content-center mb-3">
           <div className='col-md-6'>
             <label htmlFor="input-data" className='form-label'>
@@ -61,19 +72,22 @@ function App() {
           </div>
         </div>
         <div className="row mb-3">
-          <fieldset className='col-md-6 text-center fs-4'>
-            <legend className='fs-2'>Situação:</legend>
-            <div className='d-flex justify-content-center gap-3'>
-              <label htmlFor='input-entrada' className=''>
-                Entrada
-              </label>
-              <input id='input-entrada' type="radio" name="situacao" value="entrada" checked={formData.situacao === "entrada"} onChange={handleChange} required />
+          <fieldset className='col-md-6 fs-4'>
+            <div className='fs-2 d-flex justify-content-start gap-2 align-items-center fw-medium'>
+              <span>Situação</span>
+              <TbArrowsLeftRight />
             </div>
-            <div className='d-flex justify-content-center gap-3'>
-              <label htmlFor='input-saida' className=''>
-                Saída
-              </label>
-              <input id='input-saida' type="radio" name="situacao" value="saida" checked={formData.situacao === "saida"} onChange={handleChange} required />
+            <div className='row d-flex justify-content-center'>
+              <div className='d-flex justify-content-center'>
+                <label htmlFor='input-entrada' className=''>
+                  Entrada
+                </label>
+                <input id='input-entrada' type="radio" name="situacao" value="entrada" checked={formData.situacao === "entrada"} onChange={handleChange} required />
+                <label htmlFor='input-saida' className=''>
+                  Saída
+                </label>
+                <input id='input-saida' type="radio" name="situacao" value="saida" checked={formData.situacao === "saida"} onChange={handleChange} required />
+              </div>
             </div>
           </fieldset>
           <fieldset className='col-md-6 text-center fs-4'>
@@ -139,7 +153,7 @@ function App() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="success" onClick={handleClose} className='d-flex p-2 fs-4'>
-          <FaCheck />
+            <FaCheck />
           </Button>
         </Modal.Footer>
       </Modal>

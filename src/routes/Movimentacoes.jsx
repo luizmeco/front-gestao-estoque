@@ -30,6 +30,9 @@ const Movimentacoes = () => {
     useEffect(() => {
         getDados()
     })
+
+    const tabelaSaidas = dados.filter((item) => item.situacao === "saida");
+    const tabelaEntradas = dados.filter((item) => item.situacao === "entrada");
     function formatoReal(valor) {
         return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
@@ -84,7 +87,7 @@ const Movimentacoes = () => {
                         </tr>
                     </thead>
                     <tbody className="fs-4">
-                        {dados.map((item, index) => (
+                        {tabelaEntradas.map((item, index) => (
                             <tr key={item.id}>
                                 <th>{index}</th>
                                 <td>{formatoData(item.data)}</td>
