@@ -10,7 +10,7 @@
   min-height: 100vh;
 }
 
-.bg-primary{
+.bg-primary, .btn-primary{
   background-color: #e01a1a !important;
 }
 
@@ -19,7 +19,6 @@
 }
 
 .btn-rg{
-    background-color: white !important;
     color: black !important;
     border: none !important;
 }
