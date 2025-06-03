@@ -144,7 +144,7 @@ function App() {
           </div>
         </div>
         <div className='row justify-content-center mt-5 mb-5'>
-          <button className='btn btn-rg btn-primary col-md-6' type='submit'>
+          <button className='btn btn-rg btn-red col-md-6' type='submit'>
             <div className='fs-2 fw-medium d-flex justify-content-center gap-2 align-items-center'>
               <HiOutlineSave />
               <span className=''>Registrar</span>

@@ -32,7 +32,7 @@ const Movimentacoes = () => {
       }
     }
     getDados();
-  }, []);
+  }, [dados]);
 
   const tabelaSaidas = dados.filter((item) => item.situacao === "saida");
   const tabelaEntradas = dados.filter((item) => item.situacao === "entrada");
@@ -57,12 +57,15 @@ const Movimentacoes = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    await api.put(`/atualizar/${editItem.id}`, editItem);
-    setShow(false);
+    e.preventDefault()
+    console.log(editItem);
+    await api.put(`/atualizar/${editItem.id}`, editItem)
   };
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    
+  }
   const handleShow = () => setShow(true);
 
   return (
@@ -293,6 +296,7 @@ const Movimentacoes = () => {
               <Button
                 type="submit"
                 variant="primary"
+                onClick={() => { handleClose()}}
                 className="d-flex p-2 fs-4 mx-auto col-md-4 justify-content-center align-items-center gap-3"
               >
                 <span>Editar</span>
