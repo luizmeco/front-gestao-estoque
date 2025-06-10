@@ -72,21 +72,21 @@ const Movimentacoes = () => {
     <div className="container">
       <h1 className="mb-4">Movimentações</h1>
       <div className="row">
-        {/* Entradas */}
+        {/* Gastos */}
         <div className="col-12 col-lg-6 mb-4">
           <div className="table-responsive">
             <table className="table border mt-3">
               <thead className="fs-4 text-center">
                 <tr>
-                  <th colSpan={6}>Entradas</th>
+                  <th colSpan={6}>Gastos</th>
                 </tr>
                 <tr>
                   <th>#</th>
                   <th>Data</th>
-                  <th>Produto</th>
+                  <th>Descrição</th>
                   <th>Peso</th>
-                  <th>Valor</th>
-                  <th>Ações</th>
+                  <th>Valor Unit.</th>
+                  <th>Valor Total</th>
                 </tr>
               </thead>
               <tbody className="fs-5">
@@ -97,9 +97,8 @@ const Movimentacoes = () => {
                     <td>{item.produto}</td>
                     <td>{item.peso} Kg</td>
                     <td>{formatoReal(item.valor)}</td>
-                    <td className="d-flex gap-2">
-                      <button
-                        onClick={() => {
+                    {/*<td className="d-flex gap-2">
+                      *<button onClick={() => {
                           setEditItem(item);
                           handleShow();
                         }}
@@ -113,7 +112,8 @@ const Movimentacoes = () => {
                       >
                         <MdDeleteForever />
                       </button>
-                    </td>
+                    </td>*/}
+                    <td>{formatoReal(item.peso * item.valor)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -127,7 +127,7 @@ const Movimentacoes = () => {
             <table className="table border mt-3">
               <thead className="fs-4 text-center">
                 <tr>
-                  <th colSpan={6}>Saídas</th>
+                  <th colSpan={6}>Vendas</th>
                 </tr>
                 <tr>
                   <th>#</th>
@@ -239,7 +239,6 @@ const Movimentacoes = () => {
                     type="radio"
                     name="produto"
                     value="morango"
-                    checked={editItem.produto === "morango"}
                     onChange={handleChange}
                     required
                   />
@@ -253,7 +252,6 @@ const Movimentacoes = () => {
                     type="radio"
                     name="produto"
                     value="tomate"
-                    checked={editItem.produto === "tomate"}
                     onChange={handleChange}
                     required
                   />
