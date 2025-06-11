@@ -10,6 +10,8 @@ import Form from "react-bootstrap/Form";
 import { FaCheck, FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 
+import "./Movimentacoes.css";
+
 const Movimentacoes = () => {
   const [dados, setDados] = useState([]);
   const [show, setShow] = useState(false);
@@ -57,36 +59,59 @@ const Movimentacoes = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     console.log(editItem);
-    await api.put(`/atualizar/${editItem.id}`, editItem)
+    await api.put(`/atualizar/${editItem.id}`, editItem);
   };
 
   const handleClose = () => {
     setShow(false);
-    
-  }
+  };
   const handleShow = () => setShow(true);
+
+  const [classeGastos, setClasseGastos] = useState("hide");
+  const [classeVendas, setClasseVendas] = useState("");
+
+  const hideVendas = () => {
+    setClasseVendas("hide");
+    setClasseGastos("");
+  };
+  const hideGastos = () => {
+    setClasseVendas("");
+    setClasseGastos("hide");
+  };
 
   return (
     <div className="container">
       <h1 className="mb-4">Movimentações</h1>
       <div className="row">
+        <div className="row">
+          
+          <button className="btn btn-red col-3 me-2" onClick={hideGastos}>
+            Vendas
+          </button>
+
+          <button className="btn btn-red col-3" onClick={hideVendas}>
+            Gastos
+          </button>
+        </div>
+
         {/* Gastos */}
-        <div className="col-12 col-lg-6 mb-4">
+        <div className={classeGastos} id="gastos">
           <div className="table-responsive">
             <table className="table border mt-3">
               <thead className="fs-4 text-center">
                 <tr>
-                  <th colSpan={6}>Gastos</th>
+                  <th colSpan={8}>Gastos</th>
                 </tr>
                 <tr>
                   <th>#</th>
                   <th>Data</th>
-                  <th>Descrição</th>
-                  <th>Peso</th>
+                  <th>Desc.</th>
+                  <th>Qtd</th>
                   <th>Valor Unit.</th>
                   <th>Valor Total</th>
+                  <th>Apagar</th>
                 </tr>
               </thead>
               <tbody className="fs-5">
@@ -95,25 +120,17 @@ const Movimentacoes = () => {
                     <td>{i}</td>
                     <td>{formatoData(item.data)}</td>
                     <td>{item.produto}</td>
-                    <td>{item.peso} Kg</td>
+                    <td>{item.peso}</td>
                     <td>{formatoReal(item.valor)}</td>
-                    {/*<td className="d-flex gap-2">
-                      *<button onClick={() => {
-                          setEditItem(item);
-                          handleShow();
-                        }}
-                        className="btn btn-primary"
-                      >
-                        <FaRegEdit />
-                      </button>
+                    <td>{formatoReal(item.peso * item.valor)}</td>
+                    <td>
                       <button
                         onClick={() => api.delete(`/deletar/${item.id}`)}
                         className="btn btn-danger"
                       >
                         <MdDeleteForever />
                       </button>
-                    </td>*/}
-                    <td>{formatoReal(item.peso * item.valor)}</td>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -122,20 +139,22 @@ const Movimentacoes = () => {
         </div>
 
         {/* Saídas */}
-        <div className="col-12 col-lg-6 mb-4">
+        <div className={classeVendas} id="vendas">
           <div className="table-responsive">
             <table className="table border mt-3">
               <thead className="fs-4 text-center">
                 <tr>
-                  <th colSpan={6}>Vendas</th>
+                  <th colSpan={8}>Vendas</th>
                 </tr>
                 <tr>
                   <th>#</th>
                   <th>Data</th>
                   <th>Produto</th>
-                  <th>Peso</th>
-                  <th>Valor</th>
-                  <th>Ações</th>
+                  <th>Cliente</th>
+                  <th>Qtd</th>
+                  <th>Valor Unit.</th>
+                  <th>Valor Total</th>
+                  <th>Apagar</th>
                 </tr>
               </thead>
               <tbody className="fs-5">
@@ -144,18 +163,11 @@ const Movimentacoes = () => {
                     <td>{i}</td>
                     <td>{formatoData(item.data)}</td>
                     <td>{item.produto}</td>
+                    <td>{item.cliente}</td>
                     <td>{item.peso} Kg</td>
                     <td>{formatoReal(item.valor)}</td>
-                    <td className="d-flex gap-2">
-                      <button
-                        onClick={() => {
-                          setEditItem(item);
-                          handleShow();
-                        }}
-                        className="btn btn-primary"
-                      >
-                        <FaRegEdit />
-                      </button>
+                    <td>{formatoReal(item.peso * item.valor)}</td>
+                    <td>
                       <button
                         onClick={() => api.delete(`/deletar/${item.id}`)}
                         className="btn btn-danger"
@@ -294,7 +306,9 @@ const Movimentacoes = () => {
               <Button
                 type="submit"
                 variant="primary"
-                onClick={() => { handleClose()}}
+                onClick={() => {
+                  handleClose();
+                }}
                 className="d-flex p-2 fs-4 mx-auto col-md-4 justify-content-center align-items-center gap-3"
               >
                 <span>Editar</span>

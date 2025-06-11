@@ -22,9 +22,8 @@ function App() {
   const [formData, setFormData] = useState({
     data: "",
     gasto: "",
-    valor: "",
-    peso: ""
-    
+    qtd: "",
+    valor: ""
   })
 
   const handleChange = (event) => {
@@ -52,9 +51,9 @@ function App() {
     setShow(false)
     setFormData({
       data: "",
-    gasto: "",
-    valor: "",
-    peso: ""
+      gasto: "",
+      qtd: "",
+      valor: ""
 
     })
   };
@@ -65,17 +64,15 @@ function App() {
       <div className='card-header bg-primary rounded-4'>
         <div className='d-flex align-items-center justify-content-center gap-2'>
           <LuClipboardPlus />
-          <h1>Novo Registro</h1>
+          <h1>Registrar novo Gasto</h1>
         </div>
       </div>
       <form onSubmit={handleSubmit} className='row g-3 justify-content-center mt-3'>
-        <div className="row justify-content-center mb-3">
-          <div className='col-md-4'>
+        <div className="row justify-content-center mb-3 col-md-4">
             <label htmlFor="input-data" className='form-label'>
-              Data
+              Data:
             </label>
             <input id='input-data' className='form-control' type="date" name='data' value={formData.data} onChange={handleChange} required />
-          </div>
         </div>
         <div className="row mb-3">
           {/* <fieldset className=' col-md-4'><legend className='fs-2'>Digite o tipo de gasto:</legend>
@@ -90,21 +87,21 @@ function App() {
             <label htmlFor="input-gasto" className='form-label'>
               Descrição do Gasto:
             </label>
-            <input id='input-gasto' placeholder='Ex: Veneno' className='form-control' value={formData.gasto} required />
+            <input id='input-gasto' placeholder='Ex: Veneno' className='form-control' name='gasto' value={formData.gasto} onChange={handleChange} required />
           </div>
 
             <div className='col-md-4'>
             <label htmlFor="input-peso" className='form-label'>
-              Quantidade (em Kg):
+              Quantidade:
             </label>
-            <input id='input-peso' placeholder='Ex: 50' className='form-control' value={formData.peso} required />
+            <input id='input-peso' type='number' placeholder='Ex: 50' className='form-control' name='qtd' value={formData.qtd} onChange={handleChange} min={0} required />
           </div>
 
           <div className='col-md-4'>
             <label htmlFor="input-valor" className='form-label'>
               Valor Unitário:
             </label>
-            <input id='input-valor' placeholder='Ex: 500,00' className='form-control' value={formData.valor} required />
+            <input id='input-valor' type='number' placeholder='Ex: 500,00' className='form-control' name='valor' value={formData.valor} onChange={handleChange} min={0} required />
           </div>
         </div>
         
@@ -129,19 +126,15 @@ function App() {
               <h5 className='text-black'>{formData.data}</h5>
             </div>
             <div className="col-md-6">
-              <h4 className='text-black'>Peso</h4>
-              <h5 className='text-black'>{formData.peso} Kg</h5>
+              <h4 className='text-black'>Gasto</h4>
+              <h5 className='text-black'>{formData.gasto}</h5>
             </div>
 
             <div className="col-md-6">
               <h4 className='text-black'>Valor</h4>
               <h5 className='text-black'>R$ {formData.valor}</h5>
             </div>
-            <div className="col-md-6">
-              <h4 className='text-black'>Valor Total</h4>
-              <h5 className='text-black'>R$ {formatoReal(item.peso * item.valor)} </h5>
-              
-            </div>
+
           </div>
         </Modal.Body>
         <Modal.Footer>
@@ -154,4 +147,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

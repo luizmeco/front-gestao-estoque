@@ -16,7 +16,13 @@ function NavBar() {
                 <div className="collapse navbar-collapse justify-content-end slide-down" id="navbarSupportedContent">
                     <ul className="navbar-nav mb-2 mb-lg-0 gap-3">
                         <li className="nav-item btn-nb btn btn-primary mx-auto px-4">
-                            <Link className="nav-link text-white" aria-current="page" to={"/registros"}>Registrar Gasto</Link>
+                            <Link className="nav-link text-white" aria-current="page" to={"/registroVenda"}>Registrar Venda</Link>
+                        </li>
+                        <li className="nav-item btn-nb btn btn-primary mx-auto px-4">
+                            <Link className="nav-link text-white" aria-current="page" to={"/registroGasto"}>Registrar Gasto</Link>
+                        </li>
+                        <li className="nav-item btn-nb btn btn-primary mx-auto px-4">
+                            <Link className="nav-link text-white" aria-current="page" to={"/Producao"}>Registrar Produção</Link>
                         </li>
                         <li className="nav-item btn-nb btn btn-primary mx-auto px-4">
                             <Link className="nav-link text-white" aria-current="page" to={"/movimentacoes"}>Movimentações</Link>

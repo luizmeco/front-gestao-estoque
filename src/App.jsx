@@ -17,7 +17,7 @@ const App = () => {
             
             }}>
                 <NavBar />
-            <div className='col-md-10 mx-auto text-center bg-secondary mt-4 rounded-4 fs-2 p-3 shadow-lg'>
+            <div className='col-md-11 mx-auto text-center bg-secondary mt-4 rounded-4 fs-2 p-3 shadow-lg'>
                 <Outlet />
             </div>
             </div>
