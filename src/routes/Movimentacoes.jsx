@@ -13,7 +13,8 @@ import { MdDeleteForever } from "react-icons/md";
 import "./Movimentacoes.css";
 
 const Movimentacoes = () => {
-  const [dados, setDados] = useState([]);
+  const [dadosVendas, setDadosVendas] = useState([]);
+  const [dadosGastos, setDadosGastos] = useState([]);
   const [show, setShow] = useState(false);
   const [editItem, setEditItem] = useState({
     data: "",
@@ -23,22 +24,24 @@ const Movimentacoes = () => {
     valor: "",
   });
 
+  
+
   useEffect(() => {
     async function getDados() {
       try {
-        const dadosFromApi = (await api.get("/consulta")).data;
-        setDados(dadosFromApi);
+        const dadosFromGastos = (await api.get("/gastos")).data;
+        setDadosGastos(dadosFromGastos);
+        console.log(dadosFromGastos);
+        const dadosFromVendas = (await api.get("/vendas")).data;
+        setDadosVendas(dadosFromVendas);
+        console.log(dadosFromVendas);
       } catch (error) {
         alert("Erro ao consultar, tente novamente");
         console.error("Erro ao consultar os dados:", error);
       }
     }
     getDados();
-  }, [dados]);
-
-  const tabelaSaidas = dados.filter((item) => item.situacao === "saida");
-  const tabelaEntradas = dados.filter((item) => item.situacao === "entrada");
-
+  }, []);
   const formatoReal = (valor) =>
     valor.toLocaleString("pt-BR", {
       style: "currency",
@@ -115,14 +118,14 @@ const Movimentacoes = () => {
                 </tr>
               </thead>
               <tbody className="fs-5">
-                {tabelaEntradas.map((item, i) => (
-                  <tr key={`entrada-${item.id}`}>
+                {dadosGastos.map((item, i) => (
+                  <tr key={item.id}>
                     <td>{i}</td>
-                    <td>{formatoData(item.data)}</td>
+                    <td>{item.data}</td>
                     <td>{item.produto}</td>
-                    <td>{item.peso}</td>
-                    <td>{formatoReal(item.valor)}</td>
-                    <td>{formatoReal(item.peso * item.valor)}</td>
+                    <td>{item.qtd}</td>
+                    <td>{item.valor_unitario}</td>
+                    <td>{item.total}</td>
                     <td>
                       <button
                         onClick={() => api.delete(`/deletar/${item.id}`)}
@@ -138,38 +141,38 @@ const Movimentacoes = () => {
           </div>
         </div>
 
-        {/* Saídas */}
+        {/* Vendas */}
         <div className={classeVendas} id="vendas">
           <div className="table-responsive">
             <table className="table border mt-3">
               <thead className="fs-4 text-center">
                 <tr>
-                  <th colSpan={8}>Vendas</th>
+                  <th colSpan={9}>Vendas</th>
                 </tr>
                 <tr>
                   <th>#</th>
                   <th>Data</th>
-                  <th>Produto</th>
                   <th>Cliente</th>
+                  <th>Produto</th>
                   <th>Qtd</th>
-                  <th>Valor Unit.</th>
+                  <th>Valor Un.</th>
                   <th>Valor Total</th>
                   <th>Apagar</th>
                 </tr>
               </thead>
               <tbody className="fs-5">
-                {tabelaSaidas.map((item, i) => (
+                {dadosVendas.map((item, i) => (
                   <tr key={`saida-${item.id}`}>
                     <td>{i}</td>
-                    <td>{formatoData(item.data)}</td>
-                    <td>{item.produto}</td>
+                    <td>{item.data}</td>
                     <td>{item.cliente}</td>
-                    <td>{item.peso} Kg</td>
-                    <td>{formatoReal(item.valor)}</td>
-                    <td>{formatoReal(item.peso * item.valor)}</td>
+                    <td>{item.produto}</td>
+                    <td>{item.qtd}{item.tipo}</td>
+                    <td>{item.valor_unitario}</td>
+                    <td>{item.valor_total}</td>
                     <td>
                       <button
-                        onClick={() => api.delete(`/deletar/${item.id}`)}
+                        onClick={() => api.delete(`/deletarVenda/${item.id}`)}
                         className="btn btn-danger"
                       >
                         <MdDeleteForever />
