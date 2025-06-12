@@ -21,35 +21,53 @@ function App() {
   //Formatação e envio de dados do form para o banco de dados
   const [formData, setFormData] = useState({
     data: "",
+    cliente: "",
     produto: "",
     tipo: "",
-    gasto: "",
     qtd: "",
     valor: ""
   })
 
-  const handleChange = (event) => {
-    const { name, value, type } = event.target
-
+  const handleChange = (e) => {
+    const { name, value, type } = e.target;
+    // Para inputs numéricos, converte para número; caso contrário, mantém a string
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "number" ? Number(value) : value
-    }))
-  }
+      [name]: type === 'number' ? parseFloat(value) : value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData);
-    await api.post('/cadastrar', formData)
+
+    setClassSpinner('');
+    setClassRegistrar('visually-hidden');
+    setBtnRegistrar(true);
+
+    const dataParaEnvio = {
+      data: formData.data,
+      cliente: formData.cliente,
+      produto: formData.produto,
+      tipo: formData.tipo,
+      qtd: formData.qtd,
+      valor_unitario: formData.valor
+    };
+    
+    await api.post('/registroVendas', dataParaEnvio)
+    console.log(dataParaEnvio);
     handleShow()
     console.log("dados enviados com sucesso");
-     e.target.reset();
   }
 
   //configs modal
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
+
+    setClassSpinner('visually-hidden');
+    setClassRegistrar('');
+    setBtnRegistrar(false);
+
     setShow(false)
     setFormData({
       data: "",
@@ -60,6 +78,10 @@ function App() {
     })
   };
   const handleShow = () => setShow(true);
+
+  const [classSpinner, setClassSpinner] = useState('visually-hidden');
+  const [classRegistrar, setClassRegistrar] = useState('');
+  const [btnRegistrar, setBtnRegistrar] = useState(false);
 
   return (
     <>
@@ -90,13 +112,13 @@ function App() {
               </label>
               <div className='d-flex justify-content-center mt-2'>
                 <div className='form-check'>
-                  <input className='form-check-input' type="radio" name="produto" id="radio-tomate" value="Tomate" onChange={handleChange} />
+                  <input className='form-check-input' type="radio" name="produto" id="radio-tomate" value="Tomate" onChange={handleChange} required/>
                   <label className='form-check-label' htmlFor="radio-tomate">
                     Tomate
                   </label>
                 </div>
                 <div className='form-check mx-2'>
-                  <input className='form-check-input' type="radio" name="produto" id="radio-morango" value="Morango" onChange={handleChange} />
+                  <input className='form-check-input' type="radio" name="produto" id="radio-morango" value="Morango" onChange={handleChange} required/>
                   <label className='form-check-label' htmlFor="radio-morango">
                     Morango
                   </label>
@@ -111,7 +133,7 @@ function App() {
               </label>
               <div className='d-flex justify-content-center mt-2'>
                 <div className='form-check '>
-                  <input className='form-check-input' type="radio" name="tipo" id="radio-bandeja" value="Bandeja" required onChange={handleChange} />
+                  <input className='form-check-input' type="radio" name="tipo" id="radio-bandeja" value="Bdj" required onChange={handleChange} />
                   <label className='form-check-label' htmlFor="radio-bandeja">
                     Bandeja
                   </label>
@@ -131,14 +153,6 @@ function App() {
         
         {/*Registrar Cliente, Quantidade e Valor*/}
         <div className="row mb-3">
-          {/* <fieldset className=' col-md-4'><legend className='fs-2'>Digite o tipo de gasto:</legend>
-            <div className='row d-flex justify-content-center'>
-              <div className='d-flex justify-content-center'>
-                <label htmlFor='input-entrada' className=''></label>
-                <input id='input-gasto' className='form-control' type="textarea" name="situacao" required />
-               </div>
-            </div>
-          </fieldset> */} 
           <div className='col-md-4'>
             <label htmlFor="input-gasto" className='form-label'>
               Cliente:
@@ -162,16 +176,17 @@ function App() {
         </div>
         
         <div className='row justify-content-center mt-5 mb-5'>
-          <button className='btn btn-rg btn-red col-md-6' type='submit'>
+          <button className='btn btn-rg btn-red col-md-6' type='submit' disabled={btnRegistrar}>
             <div className='fs-2 fw-medium d-flex justify-content-center gap-2 align-items-center'>
-              <HiOutlineSave />
-              <span className=''>Registrar</span>
+            <HiOutlineSave className={classRegistrar}/>
+              <span className={classRegistrar}>Registrar</span>
+              <span className={classSpinner + 'spinner-border'}></span>
             </div>
             </button>
         </div>
       </form>
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal centered show={show} onHide={handleClose}>
         <Modal.Header>
           <Modal.Title className='text-success'>Registro Efetuado!</Modal.Title>
         </Modal.Header>

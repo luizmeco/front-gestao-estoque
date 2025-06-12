@@ -21,24 +21,35 @@ function App() {
   //Formatação e envio de dados do form para o banco de dados
   const [formData, setFormData] = useState({
     data: "",
-    gasto: "",
+    produto: "",
     qtd: "",
     valor: ""
   })
 
-  const handleChange = (event) => {
-    const { name, value, type } = event.target
-
+  const handleChange = (e) => {
+    const { name, value, type } = e.target;
+    // Para inputs numéricos, converte para número; caso contrário, mantém a string
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === "number" ? Number(value) : value
-    }))
-  }
+      [name]: type === 'number' ? parseFloat(value) : value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log(formData);
-    await api.post('/cadastrar', formData)
+
+    setClassSpinner('');
+    setClassRegistrar('visually-hidden');
+    setBtnRegistrar(true);
+
+    const dataParaEnvio = {
+      data: formData.data,
+      produto: formData.produto,
+      qtd: formData.qtd,
+      valor_unitario: formData.valor
+    };
+    console.log(dataParaEnvio);
+    await api.post('/registroGastos', dataParaEnvio)
     handleShow()
     console.log("dados enviados com sucesso");
 
@@ -48,6 +59,10 @@ function App() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => {
+    setClassSpinner('visually-hidden');
+    setClassRegistrar('');
+    setBtnRegistrar(false);
+    
     setShow(false)
     setFormData({
       data: "",
@@ -58,6 +73,11 @@ function App() {
     })
   };
   const handleShow = () => setShow(true);
+
+
+  const [classSpinner, setClassSpinner] = useState('visually-hidden');
+  const [classRegistrar, setClassRegistrar] = useState('');
+  const [btnRegistrar, setBtnRegistrar] = useState(false);
 
   return (
     <>
@@ -75,19 +95,11 @@ function App() {
             <input id='input-data' className='form-control' type="date" name='data' value={formData.data} onChange={handleChange} required />
         </div>
         <div className="row mb-3">
-          {/* <fieldset className=' col-md-4'><legend className='fs-2'>Digite o tipo de gasto:</legend>
-            <div className='row d-flex justify-content-center'>
-              <div className='d-flex justify-content-center'>
-                <label htmlFor='input-entrada' className=''></label>
-                <input id='input-gasto' className='form-control' type="textarea" name="situacao" required />
-               </div>
-            </div>
-          </fieldset> */} 
           <div className='col-md-4'>
             <label htmlFor="input-gasto" className='form-label'>
               Descrição do Gasto:
             </label>
-            <input id='input-gasto' placeholder='Ex: Veneno' className='form-control' name='gasto' value={formData.gasto} onChange={handleChange} required />
+            <input id='input-gasto' placeholder='Ex: Veneno' className='form-control' name='produto' value={formData.produto} onChange={handleChange} required />
           </div>
 
             <div className='col-md-4'>
@@ -106,31 +118,34 @@ function App() {
         </div>
         
         <div className='row justify-content-center mt-5 mb-5'>
-          <button className='btn btn-rg btn-red col-md-6' type='submit'>
+          <button className='btn btn-rg btn-red col-md-6' type='submit' disabled={btnRegistrar}>
             <div className='fs-2 fw-medium d-flex justify-content-center gap-2 align-items-center'>
-              <HiOutlineSave />
-              <span className=''>Registrar</span>
+              <HiOutlineSave className={classRegistrar}/>
+              <span className={classRegistrar}>Registrar</span>
+              <span className={classSpinner + 'spinner-border'}></span>
             </div>
             </button>
         </div>
       </form>
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal
+      centered 
+      show={show} onHide={handleClose}>
         <Modal.Header>
           <Modal.Title className='text-success'>Registro Efetuado!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="row">
+          <div className="row text-center">
             <div className="col-md-6">
               <h4 className='text-black'>Data</h4>
               <h5 className='text-black'>{formData.data}</h5>
             </div>
             <div className="col-md-6">
               <h4 className='text-black'>Gasto</h4>
-              <h5 className='text-black'>{formData.gasto}</h5>
+              <h5 className='text-black'>{formData.produto}</h5>
             </div>
 
-            <div className="col-md-6">
+            <div className="col-md-12 text-center">
               <h4 className='text-black'>Valor</h4>
               <h5 className='text-black'>R$ {formData.valor}</h5>
             </div>

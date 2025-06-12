@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import api from "../../services/api.js";
 
 // Bootstrap
@@ -15,7 +15,7 @@ import "./Movimentacoes.css";
 const Movimentacoes = () => {
   const [dadosVendas, setDadosVendas] = useState([]);
   const [dadosGastos, setDadosGastos] = useState([]);
-  const [show, setShow] = useState(false);
+  
   const [editItem, setEditItem] = useState({
     data: "",
     situacao: "",
@@ -24,22 +24,19 @@ const Movimentacoes = () => {
     valor: "",
   });
 
-  
+  async function getDados() {
+    try {
+      const dadosFromGastos = (await api.get("/gastos")).data;
+      setDadosGastos(dadosFromGastos);
+      const dadosFromVendas = (await api.get("/vendas")).data;
+      setDadosVendas(dadosFromVendas);
+    } catch (error) {
+      alert("Erro ao consultar, tente novamente");
+      console.error("Erro ao consultar os dados:", error);
+    }
+  }
 
   useEffect(() => {
-    async function getDados() {
-      try {
-        const dadosFromGastos = (await api.get("/gastos")).data;
-        setDadosGastos(dadosFromGastos);
-        console.log(dadosFromGastos);
-        const dadosFromVendas = (await api.get("/vendas")).data;
-        setDadosVendas(dadosFromVendas);
-        console.log(dadosFromVendas);
-      } catch (error) {
-        alert("Erro ao consultar, tente novamente");
-        console.error("Erro ao consultar os dados:", error);
-      }
-    }
     getDados();
   }, []);
   const formatoReal = (valor) =>
@@ -61,6 +58,10 @@ const Movimentacoes = () => {
     }));
   };
 
+  // Mostrar Modal
+
+  const [show, setShow] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(editItem);
@@ -72,17 +73,39 @@ const Movimentacoes = () => {
   };
   const handleShow = () => setShow(true);
 
+  // Filtros das tabelas
+
   const [classeGastos, setClasseGastos] = useState("hide");
   const [classeVendas, setClasseVendas] = useState("");
+
+  const [btnGastos, setBtnGastos] = useState(true);
+  const [btnVendas, setBtnVendas] = useState(false);
 
   const hideVendas = () => {
     setClasseVendas("hide");
     setClasseGastos("");
+
+    setBtnGastos(false);
+    setBtnVendas(true);
   };
   const hideGastos = () => {
     setClasseVendas("");
     setClasseGastos("hide");
+
+    setBtnGastos(true);
+    setBtnVendas(false);
   };
+
+  // const [totalGastos, setTotalGastos] = useState([0]);
+  // const [totalVendas, setTotalVendas] = useState([0]);
+
+  const totalGastos = useMemo(() => {
+    return dadosGastos.reduce((acc, item) => acc + parseFloat(item.total), 0);
+  }, [dadosGastos]);
+
+  const totalVendas = useMemo(() => {
+    return dadosVendas.reduce((acc, item) => acc + parseFloat(item.valor_total), 0);
+  }, [dadosVendas]);
 
   return (
     <div className="container">
@@ -90,37 +113,37 @@ const Movimentacoes = () => {
       <div className="row">
         <div className="row">
           
-          <button className="btn btn-red col-3 me-2" onClick={hideGastos}>
+          <button disabled={btnGastos} className="btn btn-red col-3 col-md-3 me-3" onClick={hideGastos}>
             Vendas
           </button>
 
-          <button className="btn btn-red col-3" onClick={hideVendas}>
+          <button disabled={btnVendas} className="btn btn-red col-3" onClick={hideVendas}>
             Gastos
           </button>
         </div>
 
         {/* Gastos */}
         <div className={classeGastos} id="gastos">
-          <div className="table-responsive">
-            <table className="table border mt-3">
-              <thead className="fs-4 text-center">
+          <div className="">
+            <table className="table mt-3">
+              <thead className="fs-4">
                 <tr>
                   <th colSpan={8}>Gastos</th>
                 </tr>
                 <tr>
-                  <th>#</th>
-                  <th>Data</th>
-                  <th>Desc.</th>
-                  <th>Qtd</th>
-                  <th>Valor Unit.</th>
-                  <th>Valor Total</th>
-                  <th>Apagar</th>
+                  <th scope="col">#</th>
+                  <th scope="col">Data</th>
+                  <th scope="col">Desc.</th>
+                  <th scope="col">Qtd</th>
+                  <th scope="col">Valor Unit.</th>
+                  <th scope="col">Valor Total</th>
+                  <th scope="col">Apagar</th>
                 </tr>
               </thead>
               <tbody className="fs-5">
                 {dadosGastos.map((item, i) => (
-                  <tr key={item.id}>
-                    <td>{i}</td>
+                    <tr key={item.id}>
+                    <th>{i}</th>
                     <td>{item.data}</td>
                     <td>{item.produto}</td>
                     <td>{item.qtd}</td>
@@ -128,7 +151,11 @@ const Movimentacoes = () => {
                     <td>{item.total}</td>
                     <td>
                       <button
-                        onClick={() => api.delete(`/deletar/${item.id}`)}
+                        onClick={async () => {
+                          setDadosGastos(dadosGastos.filter(gasto => gasto.id !== item.id));
+                          await api.delete(`/deletarGasto/${item.id}`);
+                          getDados();
+                        }}
                         className="btn btn-danger"
                       >
                         <MdDeleteForever />
@@ -136,6 +163,15 @@ const Movimentacoes = () => {
                     </td>
                   </tr>
                 ))}
+                <tr>
+                  <th>Total:</th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>{totalGastos}</td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -162,17 +198,21 @@ const Movimentacoes = () => {
               </thead>
               <tbody className="fs-5">
                 {dadosVendas.map((item, i) => (
-                  <tr key={`saida-${item.id}`}>
+                  <tr key={item.id}>
                     <td>{i}</td>
                     <td>{item.data}</td>
                     <td>{item.cliente}</td>
                     <td>{item.produto}</td>
-                    <td>{item.qtd}{item.tipo}</td>
+                    <td>{item.qtd} {item.tipo}</td>
                     <td>{item.valor_unitario}</td>
                     <td>{item.valor_total}</td>
                     <td>
                       <button
-                        onClick={() => api.delete(`/deletarVenda/${item.id}`)}
+                        onClick={async () => {
+                          setDadosVendas(dadosVendas.filter(venda => venda.id !== item.id));
+                          await api.delete(`/deletarVenda/${item.id}`);
+                          getDados();
+                        }}
                         className="btn btn-danger"
                       >
                         <MdDeleteForever />
@@ -180,6 +220,16 @@ const Movimentacoes = () => {
                     </td>
                   </tr>
                 ))}
+                 <tr>
+                  <th>Total:</th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td>{totalVendas}</td>
+                  <td></td>
+                </tr>
               </tbody>
             </table>
           </div>
