@@ -8,7 +8,7 @@ import wallpaper from './assets/img/wallpaper.png';
 
 const App = () => {
     return (
-        <div className='pb-3'>
+        <div className=''>
             <div className="bg-image" style={{
                 backgroundImage: `url(${wallpaper})`,
                 backgroundSize: 'cover',

@@ -16,7 +16,7 @@ import { HiOutlineSave } from "react-icons/hi";
 
 
 
-function App() {
+function RegistroGasto() {
 
   //Formatação e envio de dados do form para o banco de dados
   const [formData, setFormData] = useState({
@@ -162,4 +162,4 @@ function App() {
   )
 }
 
-export default App;
+export default RegistroGasto;

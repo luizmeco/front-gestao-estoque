@@ -21,7 +21,7 @@ function NavBar() {
                         <li className="nav-item btn-nb btn btn-primary mx-auto px-4">
                             <Link className="nav-link text-white" aria-current="page" to={"/registroGasto"}>Registrar Gasto</Link>
                         </li>
-                        <button className="nav-item btn-nb btn btn-primary mx-auto px-4" disabled={true}>
+                        <button className="nav-item btn-nb btn btn-primary mx-auto px-4">
                             <Link className="nav-link text-white" aria-current="page" to={"/Producao"}>Registrar Produção</Link>
                         </button>
                         <li className="nav-item btn-nb btn btn-primary mx-auto px-4">

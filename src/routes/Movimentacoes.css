@@ -4,3 +4,7 @@
 .btn{
     color: white !important;
 }
+
+.rows:hover{
+    cursor: pointer;
+}

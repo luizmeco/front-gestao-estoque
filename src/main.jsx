@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import App from './App.jsx'
-import Regsitros from './routes/RegistroGasto.jsx'
+import RegistroGasto from './routes/RegistroGasto.jsx'
 import Producao from './routes/RegistroProducao.jsx'
 import Movimentacoes from './routes/Movimentacoes.jsx'
 import RegistroVenda from './routes/RegistroVenda.jsx'
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/registroGasto",
-        element: <Regsitros />,
+        element: <RegistroGasto />,
       },
       {
         path: "/",

@@ -15,21 +15,15 @@ import "./Movimentacoes.css";
 const Movimentacoes = () => {
   const [dadosVendas, setDadosVendas] = useState([]);
   const [dadosGastos, setDadosGastos] = useState([]);
-  
-  const [editItem, setEditItem] = useState({
-    data: "",
-    situacao: "",
-    produto: "",
-    peso: "",
-    valor: "",
-  });
 
   async function getDados() {
     try {
       const dadosFromGastos = (await api.get("/gastos")).data;
       setDadosGastos(dadosFromGastos);
+      console.log(dadosFromGastos);
       const dadosFromVendas = (await api.get("/vendas")).data;
       setDadosVendas(dadosFromVendas);
+      console.log(dadosFromVendas);
     } catch (error) {
       alert("Erro ao consultar, tente novamente");
       console.error("Erro ao consultar os dados:", error);
@@ -46,13 +40,32 @@ const Movimentacoes = () => {
     });
 
   const formatoData = (data) => {
-    const partes = data.split("-");
-    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    const dataFormatada = new Date(data);
+    const dia = dataFormatada.getDate().toString().padStart(2, '0');
+    const mes = (dataFormatada.getMonth() + 1).toString().padStart(2, '0');
+    const ano = dataFormatada.getFullYear();
+    return `${dia}/${mes}/${ano}`;
   };
 
-  const handleChange = (event) => {
+  function dataIsoToDate(data) {
+    const dataFormatada = new Date(data);
+    const ano = dataFormatada.getFullYear();
+    const mes = (dataFormatada.getMonth() + 1).toString().padStart(2, '0');
+    const dia = dataFormatada.getDate().toString().padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  const handleChangeVenda = (event) => {
     const { name, value, type } = event.target;
-    setEditItem((prev) => ({
+    setEditVenda((prev) => ({
+      ...prev,
+      [name]: type === "number" ? Number(value) : value,
+    }));
+  };
+
+  const handleChangeGasto = (event) => {
+    const { name, value, type } = event.target;
+    setEditGasto((prev) => ({
       ...prev,
       [name]: type === "number" ? Number(value) : value,
     }));
@@ -60,18 +73,70 @@ const Movimentacoes = () => {
 
   // Mostrar Modal
 
-  const [show, setShow] = useState(false);
+  const [editVenda, setEditVenda] = useState({
+    data: "",
+    cliente: "",
+    produto: "",
+    qtd: "",
+    tipo: "",
+    valor_unitario: "",
+  });
 
-  const handleSubmit = async (e) => {
+  const [editGasto, setEditGasto] = useState({
+    data: "",
+    produto: "",
+    qtd: "",
+    valor: "",
+  });
+
+  const [modalVenda, setModalVenda] = useState(false);
+  const [modalGasto, setModalGasto] = useState(false);
+
+  const submitModalVenda = async (e) => {
     e.preventDefault();
-    console.log(editItem);
-    await api.put(`/atualizar/${editItem.id}`, editItem);
+
+    setClassSpinner('');
+    setClassRegistrar('visually-hidden');
+    setBtnRegistrar(true);
+
+    console.log(editVenda);
+    await api.put(`/atualizarVenda/${editVenda.id}`, editVenda);
+    closeModalVenda();
   };
 
-  const handleClose = () => {
-    setShow(false);
+  const submitModalGasto = async (e) => {
+    e.preventDefault();
+
+    setClassSpinner('');
+    setClassRegistrar('visually-hidden');
+    setBtnRegistrar(true);
+
+    console.log(editGasto);
+    await api.put(`/atualizarGasto/${editGasto.id}`, editGasto);
+    closeModalGasto();
   };
-  const handleShow = () => setShow(true);
+
+  const closeModalVenda = async () => {
+    await getDados();
+
+    setClassSpinner('visually-hidden');
+    setClassRegistrar('');
+    setBtnRegistrar(false);
+
+    setModalVenda(false);
+  };
+  const closeModalGasto = async () => {
+    await getDados();
+
+    setClassSpinner('visually-hidden');
+    setClassRegistrar('');
+    setBtnRegistrar(false);
+    
+    setModalGasto(false);
+  };
+
+  const showModalVenda = () => setModalVenda(true);
+  const showModalGasto = () => setModalGasto(true);
 
   // Filtros das tabelas
 
@@ -107,6 +172,11 @@ const Movimentacoes = () => {
     return dadosVendas.reduce((acc, item) => acc + parseFloat(item.valor_total), 0);
   }, [dadosVendas]);
 
+  // carregamento
+  const [classSpinner, setClassSpinner] = useState('visually-hidden');
+  const [classRegistrar, setClassRegistrar] = useState('');
+  const [btnRegistrar, setBtnRegistrar] = useState(false);
+
   return (
     <div className="container">
       <h1 className="mb-4">Movimentações</h1>
@@ -124,8 +194,8 @@ const Movimentacoes = () => {
 
         {/* Gastos */}
         <div className={classeGastos} id="gastos">
-          <div className="">
-            <table className="table mt-3">
+          <div className="table-responsive mt-3" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+            <table className="table table-hover">
               <thead className="fs-4">
                 <tr>
                   <th colSpan={8}>Gastos</th>
@@ -142,9 +212,12 @@ const Movimentacoes = () => {
               </thead>
               <tbody className="fs-5">
                 {dadosGastos.map((item, i) => (
-                    <tr key={item.id}>
+                    <tr className="rows" key={item.id} onClick={() => {
+                      showModalGasto() 
+                      setEditGasto(item)
+                      }}>
                     <th>{i}</th>
-                    <td>{item.data}</td>
+                    <td>{formatoData(item.data)}</td>
                     <td>{item.produto}</td>
                     <td>{item.qtd}</td>
                     <td>{item.valor_unitario}</td>
@@ -169,7 +242,7 @@ const Movimentacoes = () => {
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td>{totalGastos}</td>
+                  <td>{formatoReal(totalGastos)}</td>
                   <td></td>
                 </tr>
               </tbody>
@@ -179,8 +252,8 @@ const Movimentacoes = () => {
 
         {/* Vendas */}
         <div className={classeVendas} id="vendas">
-          <div className="table-responsive">
-            <table className="table border mt-3">
+          <div className="table-responsive mt-3" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+            <table className="table table-hover">
               <thead className="fs-4 text-center">
                 <tr>
                   <th colSpan={9}>Vendas</th>
@@ -198,9 +271,12 @@ const Movimentacoes = () => {
               </thead>
               <tbody className="fs-5">
                 {dadosVendas.map((item, i) => (
-                  <tr key={item.id}>
+                  <tr className="rows" key={item.id} onClick={() => {
+                    showModalVenda() 
+                    setEditVenda(item)
+                    }}>
                     <td>{i}</td>
-                    <td>{item.data}</td>
+                    <td>{formatoData(item.data)}</td>
                     <td>{item.cliente}</td>
                     <td>{item.produto}</td>
                     <td>{item.qtd} {item.tipo}</td>
@@ -227,7 +303,7 @@ const Movimentacoes = () => {
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td>{totalVendas}</td>
+                  <td>{formatoReal(totalVendas)}</td>
                   <td></td>
                 </tr>
               </tbody>
@@ -236,13 +312,13 @@ const Movimentacoes = () => {
         </div>
       </div>
 
-      {/* Modal de edição */}
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header>
-          <Modal.Title className="text-primary">Editar</Modal.Title>
+      {/* Modal de edição Vendas */}
+      <Modal centered show={modalVenda} onHide={closeModalVenda}>
+        <Modal.Header closeButton className="d-flex justify-content-center">
+          <Modal.Title className="text-primary">Editar Venda</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit} className="fs-4">
+          <Form onSubmit={submitModalVenda} className="fs-4">
             <div className="row mb-3">
               <div className="col-md-6 mx-auto">
                 <label htmlFor="input-data" className="form-label text-black">
@@ -253,47 +329,32 @@ const Movimentacoes = () => {
                   className="form-control"
                   type="date"
                   name="data"
-                  value={editItem.data}
-                  onChange={handleChange}
+                  value={dataIsoToDate(editVenda.data)}
+                  onChange={handleChangeVenda}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-md-6 mx-auto">
+                <label htmlFor="input-cliente" className="form-label text-black">
+                  Cliente
+                </label>
+                <input
+                  id="input-data"
+                  className="form-control"
+                  type="text"
+                  name="cliente"
+                  value={editVenda.cliente}
+                  onChange={handleChangeVenda}
                   required
                 />
               </div>
             </div>
 
             <div className="row mb-4">
-              <fieldset className="col-md-6 text-center">
-                <legend className="text-black">Situação:</legend>
-                <div className="d-flex justify-content-center gap-3">
-                  <label htmlFor="input-entrada" className="text-black">
-                    Entrada
-                  </label>
-                  <input
-                    id="input-entrada"
-                    type="radio"
-                    name="situacao"
-                    value="entrada"
-                    checked={editItem.situacao === "entrada"}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="d-flex justify-content-center gap-3">
-                  <label htmlFor="input-saida" className="text-black">
-                    Saída
-                  </label>
-                  <input
-                    id="input-saida"
-                    type="radio"
-                    name="situacao"
-                    value="saida"
-                    checked={editItem.situacao === "saida"}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </fieldset>
-
-              <fieldset className="col-md-6 text-center">
+                <fieldset className="col-md-6 text-center">
                 <legend className="text-black">Produto:</legend>
                 <div className="d-flex justify-content-center gap-3">
                   <label htmlFor="input-morango" className="text-black">
@@ -303,8 +364,9 @@ const Movimentacoes = () => {
                     id="input-morango"
                     type="radio"
                     name="produto"
-                    value="morango"
-                    onChange={handleChange}
+                    value="Morango"
+                    onChange={handleChangeVenda}
+                    checked={editVenda.produto === "morango" || editVenda.produto === "Morango"}
                     required
                   />
                 </div>
@@ -316,26 +378,149 @@ const Movimentacoes = () => {
                     id="input-tomate"
                     type="radio"
                     name="produto"
-                    value="tomate"
-                    onChange={handleChange}
+                    value="Tomate"
+                    onChange={handleChangeVenda}
+                    checked={editVenda.produto === "tomate" || editVenda.produto === "Tomate"}
                     required
                   />
                 </div>
               </fieldset>
+
+              <fieldset className="col-md-6 text-center">
+                <legend className="text-black">Tipo:</legend>
+                <div className="d-flex justify-content-center gap-3">
+                  <label htmlFor="input-bdj" className="text-black">
+                    Bdj
+                  </label>
+                  <input
+                    id="input-entrada"
+                    type="radio"
+                    name="tipo"
+                    value="Bdj"
+                    checked={editVenda.tipo === "Bdj" || editVenda.tipo === "bdj"}
+                    onChange={handleChangeVenda}
+                    required
+                  />
+                </div>
+                <div className="d-flex justify-content-center gap-3">
+                  <label htmlFor="input-kg" className="text-black">
+                    Kg
+                  </label>
+                  <input
+                    id="input-saida"
+                    type="radio"
+                    name="tipo"
+                    value="Kg"
+                    checked={editVenda.tipo === "Kg" || editVenda.tipo === "kg"}
+                    onChange={handleChangeVenda}
+                    required
+                  />
+                </div>
+              </fieldset>
+
+              
             </div>
 
             <div className="row">
               <div className="col-md-6">
                 <label htmlFor="input-peso" className="form-label text-black">
-                  Peso (Kg)
+                  Qtd (Bdj ou Kg)
                 </label>
                 <input
                   id="input-peso"
                   className="form-control"
                   type="number"
-                  name="peso"
-                  value={editItem.peso}
-                  onChange={handleChange}
+                  name="qtd"
+                  value={editVenda.qtd}
+                  onChange={handleChangeVenda}
+                  required
+                />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="input-valor" className="form-label text-black">
+                  Valor (R$)
+                </label>
+                <input
+                  id="input-valor"
+                  className="form-control"
+                  type="number"
+                  name="valor_unitario"
+                  value={editVenda.valor_unitario}
+                  onChange={handleChangeVenda}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="row mt-4">
+              <Button
+                disabled={btnRegistrar}
+                type="submit"
+                variant="primary"
+                className="d-flex p-2 fs-4 mx-auto col-md-4 justify-content-center align-items-center gap-3"
+              >
+                <span className={classRegistrar}>Editar</span>
+                <FaRegEdit className={classRegistrar}/>
+                <span className={classSpinner + 'spinner-border'}></span>
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* Modal de edição Gastos */}
+      <Modal centered show={modalGasto} onHide={closeModalGasto}>
+        <Modal.Header closeButton className="d-flex justify-content-center">
+          <Modal.Title className="text-primary">Editar Gastos</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={submitModalGasto} className="fs-4">
+            <div className="row mb-3">
+              <div className="col-md-6 mx-auto">
+                <label htmlFor="input-data" className="form-label text-black">
+                  Data
+                </label>
+                <input
+                  id="input-data"
+                  className="form-control"
+                  type="date"
+                  name="data"
+                  value={dataIsoToDate(editGasto.data)}
+                  onChange={handleChangeGasto}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="row mb-4">
+              <div className="col-md-6 mx-auto">
+                <label htmlFor="input-produto" className="form-label text-black">
+                  Produto
+                </label>
+                <input
+                  id="input-produto"
+                  className="form-control"
+                  type="text"
+                  name="produto"
+                  value={editGasto.produto}
+                  onChange={handleChangeGasto}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-6">
+                <label htmlFor="input-qtd" className="form-label text-black">
+                  Qtd
+                </label>
+                <input
+                  id="input-qtd"
+                  className="form-control"
+                  type="number"
+                  name="qtd"
+                  value={editGasto.qtd}
+                  onChange={handleChangeGasto}
                   required
                 />
               </div>
@@ -348,8 +533,8 @@ const Movimentacoes = () => {
                   className="form-control"
                   type="number"
                   name="valor"
-                  value={editItem.valor}
-                  onChange={handleChange}
+                  value={editGasto.valor_unitario}
+                  onChange={handleChangeGasto}
                   required
                 />
               </div>
@@ -357,15 +542,14 @@ const Movimentacoes = () => {
 
             <div className="row mt-4">
               <Button
+                disabled={btnRegistrar}
                 type="submit"
                 variant="primary"
-                onClick={() => {
-                  handleClose();
-                }}
                 className="d-flex p-2 fs-4 mx-auto col-md-4 justify-content-center align-items-center gap-3"
               >
-                <span>Editar</span>
-                <FaRegEdit />
+                <span className={classRegistrar}>Editar</span>
+                <FaRegEdit className={classRegistrar}/>
+                <span className={classSpinner + 'spinner-border'}></span>
               </Button>
             </div>
           </Form>
