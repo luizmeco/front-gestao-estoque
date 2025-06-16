@@ -41,7 +41,7 @@ const Movimentacoes = () => {
 
   const formatoData = (data) => {
     const dataFormatada = new Date(data);
-    const dia = dataFormatada.getDate().toString().padStart(2, '0');
+    const dia = (dataFormatada.getDate() + 1).toString().padStart(2, '0');
     const mes = (dataFormatada.getMonth() + 1).toString().padStart(2, '0');
     const ano = dataFormatada.getFullYear();
     return `${dia}/${mes}/${ano}`;
@@ -51,7 +51,7 @@ const Movimentacoes = () => {
     const dataFormatada = new Date(data);
     const ano = dataFormatada.getFullYear();
     const mes = (dataFormatada.getMonth() + 1).toString().padStart(2, '0');
-    const dia = dataFormatada.getDate().toString().padStart(2, '0');
+    const dia = (dataFormatada.getDate() + 1).toString().padStart(2, '0');
     return `${ano}-${mes}-${dia}`;
   }
 
@@ -86,7 +86,7 @@ const Movimentacoes = () => {
     data: "",
     produto: "",
     qtd: "",
-    valor: "",
+    valor_unitario: "",
   });
 
   const [modalVenda, setModalVenda] = useState(false);
@@ -131,7 +131,7 @@ const Movimentacoes = () => {
     setClassSpinner('visually-hidden');
     setClassRegistrar('');
     setBtnRegistrar(false);
-    
+
     setModalGasto(false);
   };
 
@@ -182,7 +182,7 @@ const Movimentacoes = () => {
       <h1 className="mb-4">Movimentações</h1>
       <div className="row">
         <div className="row">
-          
+
           <button disabled={btnGastos} className="btn btn-red col-3 col-md-3 me-3" onClick={hideGastos}>
             Vendas
           </button>
@@ -195,7 +195,7 @@ const Movimentacoes = () => {
         {/* Gastos */}
         <div className={classeGastos} id="gastos">
           <div className="table-responsive mt-3" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-            <table className="table table-hover">
+            <table className="table">
               <thead className="fs-4">
                 <tr>
                   <th colSpan={8}>Gastos</th>
@@ -212,10 +212,7 @@ const Movimentacoes = () => {
               </thead>
               <tbody className="fs-5">
                 {dadosGastos.map((item, i) => (
-                    <tr className="rows" key={item.id} onClick={() => {
-                      showModalGasto() 
-                      setEditGasto(item)
-                      }}>
+                  <tr className="rows" key={item.id}>
                     <th>{i}</th>
                     <td>{formatoData(item.data)}</td>
                     <td>{item.produto}</td>
@@ -223,6 +220,15 @@ const Movimentacoes = () => {
                     <td>{item.valor_unitario}</td>
                     <td>{item.total}</td>
                     <td>
+                      <button
+                        onClick={async () => {
+                          showModalGasto()
+                          setEditGasto(item)
+                        }}
+                        className="btn btn-primary me-2"
+                      >
+                        <FaRegEdit />
+                      </button>
                       <button
                         onClick={async () => {
                           setDadosGastos(dadosGastos.filter(gasto => gasto.id !== item.id));
@@ -253,7 +259,7 @@ const Movimentacoes = () => {
         {/* Vendas */}
         <div className={classeVendas} id="vendas">
           <div className="table-responsive mt-3" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-            <table className="table table-hover">
+            <table className="table">
               <thead className="fs-4 text-center">
                 <tr>
                   <th colSpan={9}>Vendas</th>
@@ -271,10 +277,7 @@ const Movimentacoes = () => {
               </thead>
               <tbody className="fs-5">
                 {dadosVendas.map((item, i) => (
-                  <tr className="rows" key={item.id} onClick={() => {
-                    showModalVenda() 
-                    setEditVenda(item)
-                    }}>
+                  <tr className="rows" key={item.id}>
                     <td>{i}</td>
                     <td>{formatoData(item.data)}</td>
                     <td>{item.cliente}</td>
@@ -283,6 +286,16 @@ const Movimentacoes = () => {
                     <td>{item.valor_unitario}</td>
                     <td>{item.valor_total}</td>
                     <td>
+                      <button
+                        onClick={async () => {
+                          setDadosVendas(dadosVendas.filter(venda => venda.id !== item.id));
+                          showModalVenda()
+                          setEditVenda(item)
+                        }}
+                        className="btn btn-primary me-2"
+                      >
+                        <FaRegEdit />
+                      </button>
                       <button
                         onClick={async () => {
                           setDadosVendas(dadosVendas.filter(venda => venda.id !== item.id));
@@ -296,7 +309,7 @@ const Movimentacoes = () => {
                     </td>
                   </tr>
                 ))}
-                 <tr>
+                <tr>
                   <th>Total:</th>
                   <td></td>
                   <td></td>
@@ -354,7 +367,7 @@ const Movimentacoes = () => {
             </div>
 
             <div className="row mb-4">
-                <fieldset className="col-md-6 text-center">
+              <fieldset className="col-md-6 text-center">
                 <legend className="text-black">Produto:</legend>
                 <div className="d-flex justify-content-center gap-3">
                   <label htmlFor="input-morango" className="text-black">
@@ -418,7 +431,7 @@ const Movimentacoes = () => {
                 </div>
               </fieldset>
 
-              
+
             </div>
 
             <div className="row">
@@ -460,7 +473,7 @@ const Movimentacoes = () => {
                 className="d-flex p-2 fs-4 mx-auto col-md-4 justify-content-center align-items-center gap-3"
               >
                 <span className={classRegistrar}>Editar</span>
-                <FaRegEdit className={classRegistrar}/>
+                <FaRegEdit className={classRegistrar} />
                 <span className={classSpinner + 'spinner-border'}></span>
               </Button>
             </div>
@@ -532,7 +545,7 @@ const Movimentacoes = () => {
                   id="input-valor"
                   className="form-control"
                   type="number"
-                  name="valor"
+                  name="valor_unitario"
                   value={editGasto.valor_unitario}
                   onChange={handleChangeGasto}
                   required
@@ -548,7 +561,7 @@ const Movimentacoes = () => {
                 className="d-flex p-2 fs-4 mx-auto col-md-4 justify-content-center align-items-center gap-3"
               >
                 <span className={classRegistrar}>Editar</span>
-                <FaRegEdit className={classRegistrar}/>
+                <FaRegEdit className={classRegistrar} />
                 <span className={classSpinner + 'spinner-border'}></span>
               </Button>
             </div>
